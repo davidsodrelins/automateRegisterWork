@@ -1,0 +1,283 @@
+﻿<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <title>Painel do Sodré</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .custom-button {
+        background-color: #20645d;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .custom-button:hover {
+        background-color: #f7b9b9;
+        color: #000000;
+    }
+
+    .custom-button i {
+        margin-right: 8px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        max-height: 500px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f5f5f5;
+    }
+
+    tbody tr td:contains("0h 0m") {
+        background-color: #dcdcdc;
+    }
+
+    tbody tr td:contains("FALTA") {
+        background-color: #ff9999;
+    }
+
+    /* Remover bordas */
+    table,
+    th,
+    td {
+        border: none;
+    }
+</style>
+
+<body>
+    <h5>David Sodré Lins</h5>
+    <h2>Magaiver Tools - Portal de Automação</h2>
+    
+    <div id="loadingMessage" style="display: none; margin: 30px; background-color: #f5f5f5;"><span>... Fazendo um carnaval por debaixo dos panos pra juntar as informações do Saturno.... Pere ai! </span></div>
+
+
+    <form action="/login" method="post">
+        <button type="submit" class="custom-button">
+            <i class="fas fa-clock"></i> Bater o ponto
+        </button>
+    </form>
+    <h3>Dados de login de hoje:</h3>
+
+    <table style="width: 40%;" id="loginRecords">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>E1</th>
+                <th>S1</th>
+                <th>E2</th>
+                <th>S2</th>
+                <th>E3</th>
+                <th>S3</th>
+                <th>E4</th>
+                <th>S4</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+    <h3>Espelho do ponto:</h3>
+    <form action="/espelho" method="post">
+        <button type="submit" class="custom-button">
+            <i class="fas fa-sync"></i> Recarregar espelho do ponto
+        </button>
+
+        <button id="registerJira" class="custom-button">
+            <i class="fas fa-save"></i> Registrar Atividade no Jira
+        </button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Tarefa</th>
+                <th>Dia da Semana</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Total em Minutos</th>
+                <th>E1</th>
+                <th>S1</th>
+                <th>E2</th>
+                <th>S2</th>
+                <th>E3</th>
+                <th>S3</th>
+                <th>E4</th>
+                <th>S4</th>
+                <th>E5</th>
+                <th>S5</th>
+            </tr>
+        </thead>
+        <tbody id="espelhoRecords">
+        </tbody>
+    </table>
+
+
+    <script>
+        const loadingMessage = document.getElementById('loadingMessage');
+
+        function formatDateToDDMMYYYY(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+
+        document.querySelector('form[action="/espelho"]').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            loadingMessage.style.display = 'block';
+            fetchEspelho();
+            loadingMessage.style.display = 'none';
+
+        });
+
+
+        async function fetchEspelho() {
+            loadingMessage.style.display = 'block';
+
+            try {
+                const response = await fetch('/espelho', { method: 'GET' });
+                const data = await response.json();
+
+                fillEspelhoTable(data);
+            } catch (error) {
+                console.error('Erro ao buscar espelho:', error);
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        function fillEspelhoTable(data) {
+            const tableBody = document.getElementById('espelhoRecords');
+            tableBody.innerHTML = '';
+
+            data.forEach(rowData => {
+                const tr = document.createElement('tr');
+
+               
+                if (rowData[3] === "0h 0m") {
+                    tr.innerHTML += '<td><input type="checkbox" class="rowSelector" disabled></td>';
+                    tr.innerHTML += '<td><input type="text" value="" class="rowInput" placeholder="Sem"/></td>';
+                } else {
+                    tr.innerHTML += '<td><input type="checkbox" class="rowSelector"></td>';
+                    tr.innerHTML += '<td><input type="text" value="" class="rowInput" placeholder="O que foi feito neste dia?"/></td>';
+                }
+
+                rowData.forEach(cell => {
+                    tr.innerHTML += `<td style="padding: 8px; border: none">${cell}</td>`;
+                });
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+
+        document.querySelector('#registerJira').addEventListener('click', function () {
+            const checkboxes = document.querySelectorAll('.rowSelector:checked');
+            const entries = [];
+            checkboxes.forEach(cb => {
+                const row = cb.parentElement.parentElement;
+                const data = row.children[3].textContent;
+                const total = row.children[6].textContent;
+
+                const inputCell = row.querySelector('.rowInput');
+                const tarefa = inputCell ? inputCell.value : "";
+
+                entries.push(`${data}#${total}#${tarefa}`);
+            });
+
+            if (entries.length == 0) {
+                alert('Não há itens selecionados para registrar.');
+                return;
+            }
+            fetch('http://localhost:8082/registro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0',
+                    'Connection': 'keep-alive',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({ entries: entries })
+            }).then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Falha ao registrar');
+            }).then(data => {
+                alert('Registros enviados com sucesso!');
+            }).catch(err => {
+                alert('Erro: ' + err.message);
+            });
+        });
+
+       
+       
+       
+       
+       
+       
+
+        function setMode(mode) {
+            fetch(`/setMode/${mode}`);
+        }
+
+
+        function fetchRecords() {
+            fetch('/currentDayRecords')
+                .then(response => response.json())
+                .then(records => {
+                    const recordsTableBody = document.querySelector('#loginRecords tbody');
+                    recordsTableBody.innerHTML = '';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${formatDateToDDMMYYYY(new Date())}</td>
+                ${records.map(record => `<td>${record}</td>`).join('')}
+            `;
+
+                    recordsTableBody.appendChild(tr);
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar registros:', error);
+                });
+        }
+
+
+
+
+        fetchRecords();
+        fetchEspelho()
+
+    </script>
+</body>
+
+
+</html>
