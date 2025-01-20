@@ -117,6 +117,7 @@
         <thead>
             <tr>
                 <th></th>
+                <th>Card</th>
                 <th>Tarefa</th>
                 <th>Dia da Semana</th>
                 <th>Data</th>
@@ -127,7 +128,7 @@
                 <th>S1</th>
                 <th>E2</th>
                 <th>S2</th>
-                <th>E3</th>
+                <th>E3</th>orlan
                 <th>S3</th>
                 <th>E4</th>
                 <th>S4</th>
@@ -185,9 +186,11 @@
                
                 if (rowData[3] === "0h 0m") {
                     tr.innerHTML += '<td><input type="checkbox" class="rowSelector" disabled></td>';
-                    tr.innerHTML += '<td><input type="text" value="" class="rowInput" placeholder="Sem"/></td>';
+                    tr.innerHTML += '<td><input type="text" value="" disabledclass="rowInputCard" placeholder="Sem REGISTRO"/></td>';
+                    tr.innerHTML += '<td><input type="text" value="" disabled class="rowInput" placeholder="Sem REGISTRO"/></td>';
                 } else {
                     tr.innerHTML += '<td><input type="checkbox" class="rowSelector"></td>';
+                    tr.innerHTML += '<td><input type="text" value="" class="rowInputCard" placeholder="CARD"/></td>';
                     tr.innerHTML += '<td><input type="text" value="" class="rowInput" placeholder="O que foi feito neste dia?"/></td>';
                 }
 
@@ -205,20 +208,23 @@
             const entries = [];
             checkboxes.forEach(cb => {
                 const row = cb.parentElement.parentElement;
-                const data = row.children[3].textContent;
-                const total = row.children[6].textContent;
+                const data = row.children[4].textContent;
+                const total = row.children[7].textContent;
 
                 const inputCell = row.querySelector('.rowInput');
                 const tarefa = inputCell ? inputCell.value : "";
 
-                entries.push(`${data}#${total}#${tarefa}`);
+                const inputCellCard = row.querySelector('.rowInputCard');
+                const card = inputCellCard ? inputCellCard.value : "";
+
+                entries.push(`${data}#${total}#${tarefa}#${card}`);
             });
 
             if (entries.length == 0) {
                 alert('Não há itens selecionados para registrar.');
                 return;
             }
-            fetch('http://localhost:8082/registro', {
+            fetch('http://localhost:8083/registro', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
