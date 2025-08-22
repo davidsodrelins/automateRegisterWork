@@ -12,17 +12,18 @@ function convert_date(date_str) {
     return `${year}-${month}-${day}T09:00:00.000-0300`;
 }
 
+
 app.post('/registro', async (req, res) => {
     try {
         const entries = req.body.entries; 
-        const apiUrl = 'https://monitoratecnologia.atlassian.net/rest/internal/3/issue/MONITORA-1109/worklog?adjustEstimate=new&newEstimate=0m';
+        const apiUrl = 'https://monitoratecnologia.atlassian.net/rest/internal/3/issue/SERASA-678/worklog?adjustEstimate=new&newEstimate=0m';
 
         const headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json,text/javascript,*/*',
-            'Cookie': 'atlassian.account.xsrf.token=6b10bc9b-016c-4db3-8c74-826034fa98cb; ajs_anonymous_id=%227a46c88d-feee-45a9-b9d2-0a26800bdf93%22; marketplace-launch-darkly=%7B%22userKey%22%3A%22a94c02aa-e4c7-462e-b93a-e34bf9c2a9e1%22%2C%22aaid%22%3A%2263c6f34bb1262586707a4ce2%22%7D; atlassian.xsrf.token=885f06241bab677838eda7e274c6d0cc547e8f2e_lin; io=8R13wZQLAmm6HwGmAH7B; JSESSIONID=-LPQLSix6MVihWhRVT1maxW-JZ284atf1vCWFAoP; tenant.session.token=eyJraWQiOiJzZXNzaW9uLXNlcnZpY2UvcHJvZC0xNTkyODU4Mzk0IiwiYWxnIjoiUlMyNTYifQ.eyJhc3NvY2lhdGlvbnMiOltdLCJzdWIiOiI2M2M2ZjM0YmIxMjYyNTg2NzA3YTRjZTIiLCJlbWFpbERvbWFpbiI6Im1vbml0b3JhdGVjLmNvbS5iciIsImltcGVyc29uYXRpb24iOltdLCJjcmVhdGVkIjoxNzA5MjA4MDYwLCJyZWZyZXNoVGltZW91dCI6MTcwOTIwODY4OCwidmVyaWZpZWQiOnRydWUsImlzcyI6InNlc3Npb24tc2VydmljZSIsInNlc3Npb25JZCI6IjQzYTY5ZDc5LTdmNGItNDMyNy05ZWY5LWYyOGY5YTU2NjM0ZSIsInN0ZXBVcHMiOltdLCJvcmdJZCI6IjQ5NmM0YzdjLWQ4NmItNDk5MC04YzBkLTcwMDMzMzU2MDMzOSIsImF1ZCI6ImF0bGFzc2lhbiIsIm5iZiI6MTcwOTIwODA4OCwiZXhwIjoxNzA5Mjk0NDg4LCJpYXQiOjE3MDkyMDgwODgsImVtYWlsIjoiZGF2aWQuc2lsdmFAbW9uaXRvcmF0ZWMuY29tLmJyIiwianRpIjoiNDNhNjlkNzktN2Y0Yi00MzI3LTllZjktZjI4ZjlhNTY2MzRlIn0.zVSCvvgLaq0IQ_ZP8bke-cGde0p-4oatWd9pOU-hi9_rOkdE6KM3iMLHYpIE8yVdnkOZedqqkaWG95X_r_3I0SVwWk6_f0a6R0HmOItcjOF9qjFWfYjC9tnKuDFawOanxd6feH-JhbZnwLthieRn744VVOPISrpAtfynxrJQbr2AMTm-TGCHtua5T3K0q7SdJcIjTeDpeA73NGZOYQu2j3-ezQzqIu11ORJq92ZZLwADEkL6WEYMpv-Azzo0aQf5xfhlhppKPXW4sH1ILalNoOdF_F9f9hOHBvg5f5TdcK54KM9G9S0Ykb8wq7LRL7V9Hh6xHteIl9eQCWIiHfybBA',  
+            'Cookie': '__awc_tld_test__=tld_test; atl-bsc-consent-token-fallback=0031111010; atlassian.account.xsrf.token=353f48f5-a47f-43fa-a2e5-ce7c30e3391a; atlassian.xsrf.token=06f7dd2d4cbb9a96dac4ad467589e186f3be263e_lin; atl-sticky-version={"currentVersion":"mrjf-prod-15003","currentVersionExpiry":"1755723882382"}; JSESSIONID=A4BE2EA432449C50E0689C09EA841369; tenant.session.token=eyJraWQiOiJzZXNzaW9uLXNlcnZpY2UvcHJvZC0xNzM4Nzk0ODc0IiwiYWxnIjoiUlMyNTYifQ.eyJhc3NvY2lhdGlvbnMiOltdLCJzdWIiOiI2M2M2ZjM0YmIxMjYyNTg2NzA3YTRjZTIiLCJlbWFpbERvbWFpbiI6Im1vbml0b3JhdGVjLmNvbS5iciIsImltcGVyc29uYXRpb24iOltdLCJjcmVhdGVkIjoxNzU1NjI4MzA1LCJyZWZyZXNoVGltZW91dCI6MTc1NTYzMjk0MiwidmVyaWZpZWQiOnRydWUsImlzcyI6InNlc3Npb24tc2VydmljZSIsInNlc3Npb25JZCI6IjdlNTRlMmE3LWE1MzktNGU2OS1iM2FiLTk4Yzk3MGI4YzM1YSIsInN0ZXBVcHMiOltdLCJvcmdJZCI6IjQ5NmM0YzdjLWQ4NmItNDk5MC04YzBkLTcwMDMzMzU2MDMzOSIsImF1ZCI6ImF0bGFzc2lhbiIsIm5iZiI6MTc1NTYzMjM0MiwiZXhwIjoxNzU1NzE4NzQyLCJpYXQiOjE3NTU2MzIzNDIsImVtYWlsIjoiZGF2aWQuc2lsdmFAbW9uaXRvcmF0ZWMuY29tLmJyIiwianRpIjoiN2U1NGUyYTctYTUzOS00ZTY5LWIzYWItOThjOTcwYjhjMzVhIn0.UQMv29Dp7TE8hEC-CuqBD3F54FMdBkz8QoRfxMpFGQaKt358g_8nfKzGIhYgrgvq29wrLhyFT0jSW1yLQn2KjKAP4v5BQu6aTyVKeDiGsypRwtKxuDkZjp7MO2JXxLY64iCF8MA2bsPWoQvroN_BtaBSnAUBnQdct7AUfGNU_5NRhfYl7U4mJZMXcHAPIwXeYg5CZlmEl_9d-UhiPL3NUXfEV65V9X5r6-FfUfpOmQ80aJXXor_eAuGZQYBxLL4eFxVHEbTLzrsi8ooAOHc6yBImUYomZddbFe_nU0j-rJMttVqdjdMwfL2SVrvIPM8tHVC-BJf879lzxXj6_VzfVw; atl-bsc-consent-token=0031111010; atl-bsc-show-banner=0',
             'Origin': 'https://monitoratecnologia.atlassian.net',
-            'Referer': 'https://monitoratecnologia.atlassian.net/browse/MONITORA-1109',
+            'Referer': 'https://monitoratecnologia.atlassian.net/browse/SERASA-678',
             
         };
         for (const entry of entries) {
